@@ -21,11 +21,11 @@ vinte minutos.
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
-| 2 — janela, biblioteca, viewport, inspetor | 5 | 3 |
+| 2 — janela, biblioteca, viewport, inspetor | 5 | 4 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **13** |
+| **Total** | **28** | **14** |
 
 ## Protocolo de execução
 
@@ -234,7 +234,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   sinal com o id.
 - **Depende de:** E2.C1
 
-### ⬜ E2.C4 — `feat(ui): inspetor gerado a partir da declaração de Param`
+### ✅ E2.C4 — `feat(ui): inspetor gerado a partir da declaração de Param`
 
 - **Tarefas:** mapeamento fixo de tipo para widget conforme a seção 11; unidade
   como sufixo dentro do campo; grupos na ordem declarada; avançados em seção

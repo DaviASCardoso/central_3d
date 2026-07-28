@@ -22,10 +22,10 @@ vinte minutos.
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
-| 3 — assíncrono, cache, hot reload | 6 | 0 |
+| 3 — assíncrono, cache, hot reload | 5 | 1 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **15** |
+| **Total** | **27** | **16** |
 
 ## Protocolo de execução
 
@@ -264,14 +264,14 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
 
 ## Entrega 3 — assíncrono, cache, tesselagem em dois níveis e hot reload
 
-### ⬜ E3.C1 — `feat(nucleo): tesselagem em dois níveis`
+### ✅ E3.C1 — `feat(nucleo): tesselagem em dois níveis` — entregue no E1.C7
 
 - **Aceite:** para a mesma peça o nível de preview produz ao menos 2× menos
   triângulos que o de exportação, e ambos saem estanques; o nível faz parte da
   chave de cache.
 - **Depende de:** E2.C5
 
-### ⬜ E3.C2 — `feat(nucleo): cache de geometria com chave canônica`
+### ✅ E3.C2 — `feat(nucleo): cache de geometria com chave canônica`
 
 - **Tarefas:** chave SHA-256 sobre id, versão e valores com `afeta_geometria`
   verdadeiro, serializados canonicamente; cache LRU em memória indexado também
@@ -429,6 +429,11 @@ Registro do que saiu do plano original, e por quê.
   captura a superfície OpenGL nativa da viewport, e devolve um retângulo preto.
   Conferir a viewport exige `vtkWindowToImageFilter` sobre a janela de
   renderização do VTK.
+- **E3.C1** — a tesselagem em dois níveis já havia sido entregue no E1.C7,
+  porque o pipeline precisava dela e a exportação precisava do nível fino. Seu
+  único critério pendente, o nível fazer parte da chave de cache, pertence ao
+  E3.C2 e foi verificado lá. A entrega 3 passou de seis para cinco commits, e o
+  total da V1 de 28 para 27.
 - **Infraestrutura** — o remoto `origin` passou de SSH para HTTPS, porque a
   chave privada `~/.ssh/id_ed25519` não é legível pelo processo que executa os
   comandos. Decisão do operador.

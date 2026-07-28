@@ -1,0 +1,65 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Ambientes virtuais ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Ferramentas ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# --- Editores e sistema operacional ---
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Saída e cache da própria Central ---
+# Arquivos gerados pela exportação (3MF, STL, STEP).
+saidas/
+# Cache de geometria e malhas quando apontado para dentro do repositório.
+# Em uso normal ele vive em %LOCALAPPDATA%/Central/cache/ (ver CENTRAL.md, seção 6).
+cache/
+# Configuração local do aplicativo, quando redirecionada para o repositório.
+.central/
+
+# --- Resíduo do Bambu Studio ---
+# O bambu-studio.exe grava result.json no diretório de trabalho corrente,
+# inclusive quando invocado apenas com --help. A Central sempre o invoca com
+# um cwd controlado, mas a rede de segurança fica aqui.
+result.json
+

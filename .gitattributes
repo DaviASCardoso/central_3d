@@ -1,0 +1,11 @@
+# Normaliza finais de linha: LF no repositório, nativo na cópia de trabalho.
+* text=auto
+
+# Arquivos que devem manter LF mesmo no Windows.
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.lock text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf

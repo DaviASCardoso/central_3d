@@ -7,6 +7,7 @@ tesselar. Esta é a versão síncrona; o worker com cancelamento entra na entreg
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -18,7 +19,7 @@ from central.log import obter
 from central.nucleo.erros import ErroDeGeracao, ErroDeValidacao
 from central.nucleo.helpers import dimensoes
 from central.nucleo.tesselagem import NivelTesselagem, tesselar
-from central.nucleo.validacao import ResultadoValidacao, validar
+from central.nucleo.validacao import validar
 
 _log = obter(__name__)
 
@@ -150,12 +151,75 @@ def orientar(resultado: Resultado, produto: Produto) -> Resultado:
     return resultado
 
 
+def executar_pipeline(
+    produto: Produto,
+    valores_validados: dict[str, Any],
+    nivel: NivelTesselagem = NivelTesselagem.PREVIEW,
+    conferir: Callable[[], None] | None = None,
+) -> ResultadoGeracao:
+    """Roda gerar, normalizar, orientar e tesselar sobre valores já validados.
+
+    Este é o pipeline de verdade, e existe num lugar só para que a versão
+    síncrona e o worker em thread nunca divirjam. O gancho `conferir` é
+    chamado entre as etapas, e é por ele que o cancelamento cooperativo aborta
+    cedo sem terminação forçada de thread.
+
+    Args:
+        produto: O manifesto do produto a gerar.
+        valores_validados: Valores já coeridos pela validação em duas etapas.
+        nivel: Nível de tesselagem das malhas devolvidas.
+        conferir: Função chamada entre as etapas; deve levantar para abortar.
+
+    Returns:
+        O resultado da geração, com corpos, malhas e dimensões.
+
+    Raises:
+        ErroDeGeracao: Se `gerar` levanta, ou devolve algo inutilizável.
+    """
+    passo = conferir or _nada
+
+    passo()
+    resultado = normalizar(_invocar(produto, valores_validados))
+
+    passo()
+    resultado = orientar(resultado, produto)
+
+    malhas: dict[str, trimesh.Trimesh] = {}
+    for corpo in resultado.corpos:
+        passo()
+        malhas[corpo.nome] = tesselar(corpo.forma, nivel)
+
+    passo()
+    conjunto = Compound(children=[corpo.forma for corpo in resultado.corpos])
+
+    _log.info(
+        "produto '%s' gerado: %d corpo(s), %d triângulo(s) no nível %s",
+        produto.id,
+        len(resultado.corpos),
+        sum(len(malha.faces) for malha in malhas.values()),
+        nivel,
+    )
+
+    return ResultadoGeracao(
+        resultado=resultado,
+        malhas=malhas,
+        valores=dict(valores_validados),
+        nivel=nivel,
+        dimensoes=dimensoes(conjunto),
+        avisos=list(resultado.avisos),
+    )
+
+
+def _nada() -> None:
+    """Gancho de cancelamento que nunca aborta, usado no caminho síncrono."""
+
+
 def gerar_sincrono(
     produto: Produto,
     valores: dict[str, Any],
     nivel: NivelTesselagem = NivelTesselagem.PREVIEW,
 ) -> ResultadoGeracao:
-    """Roda o pipeline inteiro e devolve corpos orientados com suas malhas.
+    """Valida e roda o pipeline na thread do chamador.
 
     Args:
         produto: O manifesto do produto a gerar.
@@ -171,32 +235,11 @@ def gerar_sincrono(
     """
     validacao = validar(produto, valores)
     if not validacao.valido:
-        raise ErroDeValidacao("; ".join(validacao.mensagens()))
-
-    resultado = orientar(normalizar(_invocar(produto, validacao)), produto)
-
-    malhas = {corpo.nome: tesselar(corpo.forma, nivel) for corpo in resultado.corpos}
-    conjunto = Compound(children=[corpo.forma for corpo in resultado.corpos])
-
-    _log.info(
-        "produto '%s' gerado: %d corpo(s), %d triângulo(s) no nível %s",
-        produto.id,
-        len(resultado.corpos),
-        sum(len(malha.faces) for malha in malhas.values()),
-        nivel,
-    )
-
-    return ResultadoGeracao(
-        resultado=resultado,
-        malhas=malhas,
-        valores=validacao.valores,
-        nivel=nivel,
-        dimensoes=dimensoes(conjunto),
-        avisos=list(resultado.avisos),
-    )
+        raise ErroDeValidacao("; ".join(validacao.mensagens()), validacao.erros)
+    return executar_pipeline(produto, validacao.valores, nivel)
 
 
-def _invocar(produto: Produto, validacao: ResultadoValidacao) -> Any:
+def _invocar(produto: Produto, valores: dict[str, Any]) -> Any:
     """Chama a função `gerar` do produto, encapsulando qualquer falha dela.
 
     Erro dentro de um produto jamais derruba a Central e sempre chega ao
@@ -204,7 +247,7 @@ def _invocar(produto: Produto, validacao: ResultadoValidacao) -> Any:
     em vez de engolida. Ver a seção 18 do CENTRAL.md.
     """
     try:
-        return produto.gerar(validacao.valores)
+        return produto.gerar(valores)
     except Exception as erro:  # noqa: BLE001 -- falha do produto, não da Central
         raise ErroDeGeracao(
             f"a função gerar do produto '{produto.id}' falhou: "

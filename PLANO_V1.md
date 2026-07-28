@@ -22,10 +22,10 @@ vinte minutos.
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
-| 3 — assíncrono, cache, hot reload | 5 | 2 |
+| 3 — assíncrono, cache, hot reload | 5 | 3 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **27** | **17** |
+| **Total** | **27** | **18** |
 
 ## Protocolo de execução
 
@@ -291,7 +291,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   recente.
 - **Depende de:** E3.C2
 
-### ⬜ E3.C4 — `feat(nucleo): worker em QThread com cancelamento cooperativo`
+### ✅ E3.C4 — `feat(nucleo): worker em QThread com cancelamento cooperativo`
 
 - **Aceite:** dois pedidos em sequência fazem o primeiro terminar cancelado e só
   o segundo emitir pronto; produto que levanta emite erro com traceback legível

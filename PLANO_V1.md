@@ -21,11 +21,11 @@ vinte minutos.
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
-| 2 — janela, biblioteca, viewport, inspetor | 5 | 1 |
+| 2 — janela, biblioteca, viewport, inspetor | 5 | 2 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **11** |
+| **Total** | **28** | **12** |
 
 ## Protocolo de execução
 
@@ -211,7 +211,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   `uv run central` abre a janela de verdade.
 - **Depende de:** E1.C10
 
-### ⬜ E2.C2 — `feat(ui): viewport VTK com mesa e volume de construção`
+### ✅ E2.C2 — `feat(ui): viewport VTK com mesa e volume de construção`
 
 - **Tarefas:** wrapper único do VTK com o binding fixado antes do import; mesa
   de 256×256 com grade a cada 10 mm e perímetro reforçado; arestas verticais até

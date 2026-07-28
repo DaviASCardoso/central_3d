@@ -82,6 +82,10 @@ convention = "google"
 "tests/**" = ["D100", "D101", "D102", "D103", "D104", "ANN"]
 # A CLI é a única camada autorizada a escrever na saída padrão.
 "central/cli.py" = ["T20"]
+# E402: o binding do Qt precisa ser fixado em vtkmodules.qt.PyQtImpl ANTES de
+# importar o QVTKRenderWindowInteractor, senão a detecção automática do VTK
+# escolhe sozinha. Não há como fazer isso com todos os imports no topo.
+"central/ui/viewport.py" = ["E402"]
 # O template de produto é esqueleto comentado, não código executado.
 "produtos/_template/*" = ["D", "ANN"]
 

@@ -412,7 +412,9 @@ A quinta traz o Lote com CSV, pool de processos e arranjo em placa. A sexta traz
 
 ## 18. Convenções não negociáveis
 
-Nenhum caminho absoluto aparece em código, tudo passa por `pathlib.Path` resolvido a partir do diretório do aplicativo ou do diretório de dados do usuário. Toda leitura e escrita de texto declara `encoding="utf-8"` explicitamente. Toda função pública tem anotação de tipo completa e docstring no estilo Google. Nenhum `except` nu existe no projeto; erros são capturados por tipo específico e sempre registrados via `logging`, nunca via `print`. Erro dentro de um produto jamais derruba a Central, jamais aborta um lote inteiro, e sempre chega ao operador com traceback legível. Nenhum widget contém regra de negócio. Nenhum módulo de produto importa qualquer coisa fora de `central.contrato` e das bibliotecas de geometria.
+Nenhum caminho absoluto aparece em código, tudo passa por `pathlib.Path` resolvido a partir do diretório do aplicativo ou do diretório de dados do usuário. Toda leitura e escrita de texto declara `encoding="utf-8"` explicitamente. Toda função pública tem anotação de tipo completa e docstring no estilo Google. Nenhum `except` nu existe no projeto; erros são capturados por tipo específico e sempre registrados via `logging`, nunca via `print`. Erro dentro de um produto jamais derruba a Central, jamais aborta um lote inteiro, e sempre chega ao operador com traceback legível. Nenhum widget contém regra de negócio. Nenhum módulo de produto importa qualquer coisa fora de `central.contrato`, de `central.nucleo.helpers` e das bibliotecas de geometria.
+
+> **Esclarecimento em 2026-07-28.** A redação anterior citava apenas `central.contrato`, o que contradizia a seção 6, onde o núcleo expõe `texto_solido` justamente para que os produtos o usem em vez de chamar `Text` diretamente, e a seção 14, que põe esse helper em `central/nucleo/helpers.py`. A exceção é única e deliberada: `central.nucleo.helpers` só contém funções puras de geometria, sem I/O, sem configuração e sem estado, de modo que importá-la não dá ao produto nenhum dos poderes que a seção 1 lhe nega. Qualquer outro módulo do núcleo continua proibido.
 
 ---
 

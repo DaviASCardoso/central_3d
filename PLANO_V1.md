@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 7 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 8 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **7** |
+| **Total** | **28** | **8** |
 
 ## Protocolo de execução
 
@@ -158,7 +158,7 @@ Helena` produz um 3MF.
   é estanque e tem volume dentro de 0,1 % do analítico.
 - **Depende de:** E1.C5, E1.C6
 
-### ⬜ E1.C8 — `feat(produtos): placa com nome em relevo como produto de referência`
+### ✅ E1.C8 — `feat(produtos): placa com nome em relevo como produto de referência`
 
 - **Tarefas:** produto de referência da seção 17 — cubo com texto em relevo —
   usando `texto_solido`, com os limites da seção 8 codificados nos `Param`
@@ -403,6 +403,19 @@ Registro do que saiu do plano original, e por quê.
   grava esse arquivo no diretório de trabalho corrente, inclusive rodando apenas
   com `--help`, e ele apareceu na raiz do repositório durante as verificações da
   seção 19. O commit E4.C3 invoca o executável com `cwd` controlado.
+- **E1.C7** — descoberto que o OCCT guarda a triangulação dentro da forma e só
+  remalha o que estiver pior que o pedido, o que fazia a malha depender da
+  ordem das chamadas. Corrigido com `BRepTools.Clean_s` antes de malhar.
+  Também: triângulos degenerados vindos do malhador, como os do polo de uma
+  esfera, passaram a ser descartados na própria tesselagem, porque são
+  artefato dela e não defeito do produto.
+- **E1.C8** — acrescentado `central/nucleo/impressora.py` com o volume de
+  construção. Não estava previsto, mas o número aparece na viewport, no portão
+  de qualidade e no teste genérico, e não podia virar literal repetido.
+- **E1.C8** — `CENTRAL.md` seção 18 esclarecida. A redação dizia que um produto
+  só importa de `central.contrato`, o que contradizia a seção 6, que manda o
+  produto usar o `texto_solido` do núcleo, e a seção 14, que o põe em
+  `central/nucleo/helpers.py`. A exceção agora está escrita e é única.
 - **Infraestrutura** — o remoto `origin` passou de SSH para HTTPS, porque a
   chave privada `~/.ssh/id_ed25519` não é legível pelo processo que executa os
   comandos. Decisão do operador.

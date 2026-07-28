@@ -37,6 +37,11 @@ class ResultadoGeracao:
         nivel: Em que nível de tesselagem as malhas foram feitas.
         dimensoes: Tamanho do conjunto em milímetros, na ordem x, y, z.
         avisos: Mensagens do produto dirigidas ao operador.
+        tem_solidos: Falso quando o resultado veio do cache de disco, que
+            guarda apenas malhas. Nesse caso `corpo.forma` é `None` e qualquer
+            operação que precise do B-rep — exportar STEP, por exemplo — exige
+            gerar de novo. O cache de disco só guarda o nível de preview
+            justamente para que a exportação nunca caia neste caso.
     """
 
     resultado: Resultado
@@ -45,6 +50,7 @@ class ResultadoGeracao:
     nivel: NivelTesselagem
     dimensoes: tuple[float, float, float]
     avisos: list[str] = field(default_factory=list)
+    tem_solidos: bool = True
 
 
 def normalizar(saida: Any) -> Resultado:

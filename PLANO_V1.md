@@ -22,10 +22,10 @@ vinte minutos.
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
-| 3 — assíncrono, cache, hot reload | 5 | 1 |
+| 3 — assíncrono, cache, hot reload | 5 | 2 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **27** | **16** |
+| **Total** | **27** | **17** |
 
 ## Protocolo de execução
 
@@ -281,7 +281,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   das chaves no dicionário não altera o hash.
 - **Depende de:** E3.C1
 
-### ⬜ E3.C3 — `feat(nucleo): cache de disco content-addressed com teto LRU`
+### ✅ E3.C3 — `feat(nucleo): cache de disco content-addressed com teto LRU`
 
 - **Tarefas:** persistência no diretório de dados do usuário, malha em binário
   compacto, teto configurável com padrão de dois gigabytes e limpeza por

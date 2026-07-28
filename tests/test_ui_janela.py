@@ -55,6 +55,19 @@ def test_troca_de_aba(janela) -> None:
     assert janela.aba_atual() == ABA_EDITOR
 
 
+def test_a_aba_biblioteca_e_a_grade_de_cards(janela) -> None:
+    from central.ui.biblioteca import Biblioteca
+
+    assert isinstance(janela.biblioteca, Biblioteca)
+    assert janela.biblioteca.quantidade_de_cards() >= 1
+
+
+def test_escolher_produto_leva_ao_editor(janela) -> None:
+    assert janela.aba_atual() == ABA_BIBLIOTECA
+    janela.biblioteca.produto_escolhido.emit("placa_nome")
+    assert janela.aba_atual() == ABA_EDITOR
+
+
 def test_barra_de_status_conta_os_produtos(janela) -> None:
     mensagem = janela.statusBar().currentMessage()
     assert str(len(janela.registro)) in mensagem

@@ -21,11 +21,11 @@ vinte minutos.
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
-| 2 — janela, biblioteca, viewport, inspetor | 5 | 2 |
+| 2 — janela, biblioteca, viewport, inspetor | 5 | 3 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **12** |
+| **Total** | **28** | **13** |
 
 ## Protocolo de execução
 
@@ -223,7 +223,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   o mesmo ator e não altera a posição da câmera; a primeira carga enquadra.
 - **Depende de:** E2.C1
 
-### ⬜ E2.C3 — `feat(ui): biblioteca em grade de cards`
+### ✅ E2.C3 — `feat(ui): biblioteca em grade de cards`
 
 - **Tarefas:** grade com nome, categoria, versão e descrição; filtro por
   categoria e busca em nome, descrição e tags; card vermelho para produto com

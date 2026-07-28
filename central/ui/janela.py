@@ -16,6 +16,7 @@ from central import __version__
 from central.log import obter
 from central.nucleo import Registro, descobrir
 from central.ui import tema
+from central.ui.biblioteca import Biblioteca
 
 _log = obter(__name__)
 
@@ -47,24 +48,25 @@ class JanelaPrincipal(QMainWindow):
         self.setWindowTitle(f"{TITULO} {__version__}")
         self.resize(LARGURA_INICIAL, ALTURA_INICIAL)
 
+        self.biblioteca = Biblioteca(self.registro)
+        self.biblioteca.produto_escolhido.connect(self.abrir_no_editor)
+
         self._abas = QTabWidget(self)
-        self._abas.addTab(self._montar_biblioteca(), "Biblioteca")
+        self._abas.addTab(self.biblioteca, "Biblioteca")
         self._abas.addTab(self._montar_editor(), "Editor")
         self.setCentralWidget(self._abas)
 
         self.statusBar().showMessage(self._resumo_do_registro())
         _log.info("janela montada com %d produto(s)", len(self.registro))
 
-    def _montar_biblioteca(self) -> QWidget:
-        """Cria o conteúdo da aba Biblioteca.
+    def abrir_no_editor(self, id_produto: str) -> None:
+        """Abre um produto no Editor e troca para essa aba.
 
-        A grade de cards chega no commit da biblioteca; até lá fica um resumo
-        textual, para que a janela seja funcional em vez de mentir sobre um
-        painel que ainda não existe.
+        Args:
+            id_produto: Identificador do produto escolhido na biblioteca.
         """
-        return QLabel(
-            self._resumo_do_registro(), alignment=Qt.AlignmentFlag.AlignCenter
-        )
+        _log.info("produto '%s' escolhido na biblioteca", id_produto)
+        self.ir_para(ABA_EDITOR)
 
     def _montar_editor(self) -> QWidget:
         """Cria o conteúdo da aba Editor.

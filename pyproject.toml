@@ -60,6 +60,12 @@ ignore = [
     # N818 exige sufixo "Error" em exceção. A seção 18 manda identificadores do
     # domínio em português, e o prefixo "Erro" é o equivalente direto.
     "N818",
+    # ANN401 proíbe `Any` em argumento e retorno. O contrato é deliberadamente
+    # heterogêneo: o tipo de um valor de parâmetro só se conhece em tempo de
+    # execução, a partir do `TipoParam` declarado. Trocar por union fechada
+    # mentiria sobre o que a função aceita. A seção 18 exige anotação completa,
+    # e `Any` aqui é a anotação honesta.
+    "ANN401",
 ]
 
 [tool.ruff.lint.pydocstyle]

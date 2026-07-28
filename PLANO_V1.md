@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 4 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 5 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **4** |
+| **Total** | **28** | **5** |
 
 ## Protocolo de execução
 
@@ -119,7 +119,7 @@ Helena` produz um 3MF.
   sem `MANIFESTO` também vira falha nomeada.
 - **Depende de:** E1.C3
 
-### ⬜ E1.C5 — `feat(nucleo): validação de parâmetros em duas etapas`
+### ✅ E1.C5 — `feat(nucleo): validação de parâmetros em duas etapas`
 
 - **Tarefas:** etapa 1 por `Param` (coerção de tipo, mínimo, máximo, `max_len`,
   `padrao_regex` com casamento total, pertinência a `opcoes`); etapa 2 pelo

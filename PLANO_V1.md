@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 6 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 7 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **6** |
+| **Total** | **28** | **7** |
 
 ## Protocolo de execução
 
@@ -144,7 +144,7 @@ Helena` produz um 3MF.
   1e-6.
 - **Depende de:** E1.C3
 
-### ⬜ E1.C7 — `feat(nucleo): pipeline síncrono de geração e tesselagem absoluta`
+### ✅ E1.C7 — `feat(nucleo): pipeline síncrono de geração e tesselagem absoluta`
 
 - **Tarefas:** `gerar_sincrono()` no pipeline da seção 6 — validar, gerar,
   normalizar, orientar, tesselar; normalização aceitando sólido solto, lista de

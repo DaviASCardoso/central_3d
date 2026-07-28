@@ -21,11 +21,11 @@ vinte minutos.
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
-| 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
+| 2 — janela, biblioteca, viewport, inspetor | 5 | 1 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **10** |
+| **Total** | **28** | **11** |
 
 ## Protocolo de execução
 
@@ -203,7 +203,7 @@ Helena` produz um 3MF.
 Geração síncrona, com o travamento momentâneo aceito. As abas são Biblioteca e
 Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
 
-### ⬜ E2.C1 — `feat(ui): janela principal com abas e tema escuro`
+### ✅ E2.C1 — `feat(ui): janela principal com abas e tema escuro`
 
 - **Arquivos:** `central/app.py`, `central/ui/janela.py`, `central/ui/tema.py`,
   `pyproject.toml`, `tests/test_ui_janela.py`

@@ -23,6 +23,9 @@ dependencies = [
 [project.scripts]
 central-cli = "central.cli:principal"
 
+[project.gui-scripts]
+central = "central.app:principal"
+
 [dependency-groups]
 dev = [
     "pytest~=8.4",

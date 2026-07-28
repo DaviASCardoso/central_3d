@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 5 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 6 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **5** |
+| **Total** | **28** | **6** |
 
 ## Protocolo de execução
 
@@ -132,7 +132,7 @@ Helena` produz um 3MF.
   português.
 - **Depende de:** E1.C3
 
-### ⬜ E1.C6 — `feat(nucleo): helpers de geometria com texto_solido memoizado`
+### ✅ E1.C6 — `feat(nucleo): helpers de geometria com texto_solido memoizado`
 
 - **Tarefas:** `texto_solido(texto, fonte, tamanho, espessura)` com `lru_cache`
   na tupla exata, validando o nome da fonte contra as disponíveis para impedir a

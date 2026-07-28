@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 2 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 3 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **2** |
+| **Total** | **28** | **3** |
 
 ## Protocolo de execução
 
@@ -93,7 +93,7 @@ Helena` produz um 3MF.
   `OPTIONS:` íntegra.
 - **Depende de:** E1.C1
 
-### ⬜ E1.C3 — `feat(contrato): define Param, Corpo, Resultado e Produto`
+### ✅ E1.C3 — `feat(contrato): define Param, Corpo, Resultado e Produto`
 
 - **Tarefas:** `TipoParam`, `Param`, `Corpo`, `Resultado` e `Produto` conforme a
   seção 4, com as docstrings do documento.

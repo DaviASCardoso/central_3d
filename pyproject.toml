@@ -20,6 +20,9 @@ dependencies = [
     "vtk==9.6.2",
 ]
 
+[project.scripts]
+central-cli = "central.cli:principal"
+
 [dependency-groups]
 dev = [
     "pytest~=8.4",

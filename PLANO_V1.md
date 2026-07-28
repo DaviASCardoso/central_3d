@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 9 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **9** |
+| **Total** | **28** | **10** |
 
 ## Protocolo de execução
 
@@ -184,7 +184,7 @@ Helena` produz um 3MF.
   da malha validada; o STL relido tem volume dentro de 0,5 % do sólido.
 - **Depende de:** E1.C7
 
-### ⬜ E1.C10 — `feat(cli): geração e exportação por linha de comando`
+### ✅ E1.C10 — `feat(cli): geração e exportação por linha de comando`
 
 - **Tarefas:** `listar` mostrando produtos descobertos e falhos; `gerar <id>`
   com os parâmetros como opções, `--saida` e `--formato`; erros de validação
@@ -416,6 +416,13 @@ Registro do que saiu do plano original, e por quê.
   só importa de `central.contrato`, o que contradizia a seção 6, que manda o
   produto usar o `texto_solido` do núcleo, e a seção 14, que o põe em
   `central/nucleo/helpers.py`. A exceção agora está escrita e é única.
+- **E1.C9** — nenhum desvio; a garantia de que a malha gravada é a validada
+  ficou travada pelo teste que conta `<triangle>` dentro do XML.
+- **E1.C10** — o `argparse` abrevia opção longa por padrão, e `--nome` do
+  produto casava com `--nome-do-arquivo` da CLI, gravando o valor no lugar
+  errado em silêncio. Corrigido com `allow_abbrev=False` no analisador e em
+  cada subparser, já que a opção não se propaga. Acrescentada também a recusa
+  explícita quando um produto declara chave reservada pela CLI.
 - **Infraestrutura** — o remoto `origin` passou de SSH para HTTPS, porque a
   chave privada `~/.ssh/id_ed25519` não é legível pelo processo que executa os
   comandos. Decisão do operador.

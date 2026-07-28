@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 8 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 9 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **8** |
+| **Total** | **28** | **9** |
 
 ## Protocolo de execução
 
@@ -172,7 +172,7 @@ Helena` produz um 3MF.
   256×256×256; `validar` rejeita nome vazio e relevo abaixo de 0,6 mm.
 - **Depende de:** E1.C7, E1.C4
 
-### ⬜ E1.C9 — `feat(nucleo): exportação 3MF multi-objeto e STL`
+### ✅ E1.C9 — `feat(nucleo): exportação 3MF multi-objeto e STL`
 
 - **Tarefas:** escrita de 3MF com `lib3mf` direto a partir da malha de
   exportação — um `MeshObject` por `Corpo`, nome, cor via `basematerials`,

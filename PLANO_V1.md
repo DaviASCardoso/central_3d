@@ -21,11 +21,11 @@ vinte minutos.
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
-| 2 — janela, biblioteca, viewport, inspetor | 5 | 4 |
+| 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **14** |
+| **Total** | **28** | **15** |
 
 ## Protocolo de execução
 
@@ -248,7 +248,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   emitido; o grifo aparece na chave recusada.
 - **Depende de:** E2.C1, E1.C5
 
-### ⬜ E2.C5 — `feat(ui): editor de três painéis com geração síncrona`
+### ✅ E2.C5 — `feat(ui): editor de três painéis com geração síncrona`
 
 - **Tarefas:** árvore de corpos recolhível com visibilidade por corpo; viewport
   ao centro; inspetor à direita; barra de status com estado, avisos do produto e
@@ -423,6 +423,12 @@ Registro do que saiu do plano original, e por quê.
   errado em silêncio. Corrigido com `allow_abbrev=False` no analisador e em
   cada subparser, já que a opção não se propaga. Acrescentada também a recusa
   explícita quando um produto declara chave reservada pela CLI.
+- **E2.C2** — a cor das arestas do volume de construção foi clareada depois de
+  conferência visual: no valor original elas sumiam contra o fundo escuro.
+- **E2.C5** — registrado para verificações futuras: `QWidget.grab()` do Qt não
+  captura a superfície OpenGL nativa da viewport, e devolve um retângulo preto.
+  Conferir a viewport exige `vtkWindowToImageFilter` sobre a janela de
+  renderização do VTK.
 - **Infraestrutura** — o remoto `origin` passou de SSH para HTTPS, porque a
   chave privada `~/.ssh/id_ed25519` não é legível pelo processo que executa os
   comandos. Decisão do operador.

@@ -328,6 +328,14 @@ class Viewport(QWidget):
             ator.GetProperty().SetOpacity(opacidade)
         self.redesenhar()
 
+    def esquecer_enquadramento(self) -> None:
+        """Faz a próxima peça reenquadrar a câmera.
+
+        Chamado ao trocar de produto: aí sim o reposicionamento é desejado,
+        porque a peça nova pode ter escala completamente diferente.
+        """
+        self._ja_enquadrou = False
+
     def limpar(self) -> None:
         """Remove a peça da cena, mantendo mesa, volume e câmera."""
         for ator in self._atores_da_peca.values():

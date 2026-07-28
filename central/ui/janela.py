@@ -9,14 +9,15 @@ nem como aba vazia.
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel, QMainWindow, QTabWidget, QWidget
+from PySide6.QtGui import QCloseEvent, QShowEvent
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from central import __version__
 from central.log import obter
 from central.nucleo import Registro, descobrir
 from central.ui import tema
 from central.ui.biblioteca import Biblioteca
+from central.ui.editor import Editor
 
 _log = obter(__name__)
 
@@ -51,9 +52,11 @@ class JanelaPrincipal(QMainWindow):
         self.biblioteca = Biblioteca(self.registro)
         self.biblioteca.produto_escolhido.connect(self.abrir_no_editor)
 
+        self.editor = Editor()
+
         self._abas = QTabWidget(self)
         self._abas.addTab(self.biblioteca, "Biblioteca")
-        self._abas.addTab(self._montar_editor(), "Editor")
+        self._abas.addTab(self.editor, "Editor")
         self.setCentralWidget(self._abas)
 
         self.statusBar().showMessage(self._resumo_do_registro())
@@ -65,18 +68,26 @@ class JanelaPrincipal(QMainWindow):
         Args:
             id_produto: Identificador do produto escolhido na biblioteca.
         """
+        if id_produto not in self.registro:
+            _log.warning("produto '%s' não está no registro", id_produto)
+            return
         _log.info("produto '%s' escolhido na biblioteca", id_produto)
         self.ir_para(ABA_EDITOR)
+        self.editor.abrir(self.registro.obter(id_produto))
 
-    def _montar_editor(self) -> QWidget:
-        """Cria o conteúdo da aba Editor.
+    def showEvent(self, event: QShowEvent) -> None:  # noqa: N802 -- nome do Qt
+        """Inicializa a viewport assim que a janela ganha um contexto gráfico."""
+        super().showEvent(event)
+        self.editor.iniciar()
 
-        Os três painéis chegam no commit do editor.
+    def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802 -- nome do Qt
+        """Solta os recursos do VTK antes de fechar.
+
+        Sem isto o processo pode não terminar, porque o VTK segura o contexto
+        de OpenGL depois de o widget Qt ter ido embora.
         """
-        return QLabel(
-            "Escolha um produto na Biblioteca.",
-            alignment=Qt.AlignmentFlag.AlignCenter,
-        )
+        self.editor.encerrar()
+        super().closeEvent(event)
 
     def _resumo_do_registro(self) -> str:
         """Frase de uma linha com a contagem de produtos e de falhas."""

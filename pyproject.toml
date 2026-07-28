@@ -57,6 +57,9 @@ select = [
 ignore = [
     "D203", # conflita com D211
     "D213", # conflita com D212
+    # N818 exige sufixo "Error" em exceção. A seção 18 manda identificadores do
+    # domínio em português, e o prefixo "Erro" é o equivalente direto.
+    "N818",
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -64,7 +67,7 @@ convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 # Testes não precisam de docstring pública nem de anotação de retorno.
-"tests/*" = ["D100", "D101", "D102", "D103", "D104", "ANN"]
+"tests/**" = ["D100", "D101", "D102", "D103", "D104", "ANN"]
 # A CLI é a única camada autorizada a escrever na saída padrão.
 "central/cli.py" = ["T20"]
 # O template de produto é esqueleto comentado, não código executado.

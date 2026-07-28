@@ -20,12 +20,12 @@ vinte minutos.
 
 | Entrega | Commits | Concluídos |
 | --- | --- | --- |
-| 1 — contrato, descoberta, produto, CLI | 10 | 3 |
+| 1 — contrato, descoberta, produto, CLI | 10 | 4 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 0 |
 | 3 — assíncrono, cache, hot reload | 6 | 0 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **28** | **3** |
+| **Total** | **28** | **4** |
 
 ## Protocolo de execução
 
@@ -105,7 +105,7 @@ Helena` produz um 3MF.
   defaults mutáveis entre instâncias.
 - **Depende de:** E1.C1
 
-### ⬜ E1.C4 — `feat(nucleo): descoberta de produtos tolerante a falhas`
+### ✅ E1.C4 — `feat(nucleo): descoberta de produtos tolerante a falhas`
 
 - **Tarefas:** `registro.py` varrendo `produtos/` com `pkgutil.iter_modules`,
   importando cada pacote sob `try/except Exception` com traceback preservado e

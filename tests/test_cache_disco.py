@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -155,6 +157,9 @@ def test_teto_apaga_a_entrada_mais_antiga(tmp_path: Path, geracao) -> None:
     cache.guardar("teste/antiga", geracao)
     tamanho = cache.tamanho_em_bytes()
 
+    antigo = time.time() - 3600
+    os.utime(cache.caminho_de("teste/antiga"), (antigo, antigo))
+
     # Um teto pouco acima de uma entrada só deixa a mais recente sobreviver.
     cache.teto_em_bytes = int(tamanho * 1.5)
     cache.guardar("teste/recente", geracao)
@@ -175,6 +180,13 @@ def test_usar_uma_entrada_a_protege(tmp_path: Path, geracao) -> None:
     cache = CacheEmDisco(diretorio=tmp_path / "cache", teto_em_bytes=10**9)
     cache.guardar("teste/a", geracao)
     cache.guardar("teste/b", geracao)
+
+    # Envelhecer as duas explicitamente evita empate de timestamp: dois
+    # arquivos escritos no mesmo instante têm a mesma mtime, e aí a ordem de
+    # descarte passaria a depender do relógio em vez da política.
+    antigo = time.time() - 3600
+    for chave_completa in ("teste/a", "teste/b"):
+        os.utime(cache.caminho_de(chave_completa), (antigo, antigo))
 
     cache.obter("teste/a")
     cache.teto_em_bytes = int(cache.tamanho_em_bytes() * 0.6)

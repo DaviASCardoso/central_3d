@@ -409,6 +409,8 @@ class Editor(QWidget):
     def _comecou_geracao(self, sequencia: int) -> None:
         """Mostra que há trabalho em curso sem esconder a peça anterior."""
         del sequencia
+        if self._encerrado:
+            return
         self.status.mostrar_estado("Gerando…")
         self.indicador.iniciar()
         if self.ultima_geracao is not None:
@@ -422,9 +424,16 @@ class Editor(QWidget):
     def _recebeu_geracao(self, resultado: ResultadoGeracao) -> None:
         """Exibe uma geração concluída.
 
+        Uma geração pode concluir no exato instante em que a janela fecha.
+        Tocar a viewport depois de o contexto de OpenGL ter sido solto é falha
+        de acesso nativa, não exceção de Python, então o encerramento é
+        conferido antes de qualquer coisa.
+
         Args:
             resultado: O que o worker produziu.
         """
+        if self._encerrado:
+            return
         self._encerrar_indicacao()
         if self.inspetor is not None:
             self.inspetor.grifar_erros({})
@@ -455,6 +464,8 @@ class Editor(QWidget):
         Args:
             falha: O que o worker emitiu.
         """
+        if self._encerrado:
+            return
         self._encerrar_indicacao()
 
         if falha.erros_por_chave:

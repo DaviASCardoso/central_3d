@@ -146,6 +146,7 @@ class Viewport(QWidget):
 
         self._atores_da_peca: dict[str, vtkActor] = {}
         self._ja_enquadrou = False
+        self._encerrado = False
 
         self._montar_mesa()
         self._montar_volume()
@@ -387,7 +388,9 @@ class Viewport(QWidget):
     # --- ciclo de vida ---------------------------------------------------
 
     def redesenhar(self) -> None:
-        """Pede um novo quadro."""
+        """Pede um novo quadro, ou não faz nada se a viewport já foi encerrada."""
+        if self._encerrado:
+            return
         self._renderer.ResetCameraClippingRange()
         self._interactor.GetRenderWindow().Render()
 
@@ -399,10 +402,19 @@ class Viewport(QWidget):
         """Solta a janela de renderização do VTK.
 
         Sem isto o processo pode não terminar, porque o VTK segura o contexto
-        de OpenGL depois de o widget Qt ter ido embora.
+        de OpenGL depois de o widget Qt ter ido embora. Depois daqui,
+        `redesenhar` vira operação vazia: desenhar num contexto já finalizado é
+        falha de acesso nativa, não exceção de Python.
         """
+        if self._encerrado:
+            return
+        self._encerrado = True
         self._interactor.GetRenderWindow().Finalize()
         self._interactor.close()
+
+    def esta_encerrada(self) -> bool:
+        """Diz se a viewport já soltou o contexto gráfico."""
+        return self._encerrado
 
     def quantidade_de_atores(self) -> int:
         """Total de atores na cena, incluindo mesa e volume."""

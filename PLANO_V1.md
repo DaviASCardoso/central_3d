@@ -22,10 +22,10 @@ vinte minutos.
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
-| 3 — assíncrono, cache, hot reload | 5 | 4 |
+| 3 — assíncrono, cache, hot reload | 5 | 5 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **27** | **19** |
+| **Total** | **27** | **20** |
 
 ## Protocolo de execução
 
@@ -305,7 +305,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   anterior nunca some; erro mostra o painel e o inspetor continua editável.
 - **Depende de:** E3.C4
 
-### ⬜ E3.C6 — `feat(nucleo): recarregamento a quente dos módulos de produto`
+### ✅ E3.C6 — `feat(nucleo): recarregamento a quente dos módulos de produto`
 
 - **Aceite:** editar um produto em disco recarrega em menos de um segundo;
   gravação em duas etapas dispara um único reload; erro de sintaxe não derruba
@@ -434,6 +434,15 @@ Registro do que saiu do plano original, e por quê.
   único critério pendente, o nível fazer parte da chave de cache, pertence ao
   E3.C2 e foi verificado lá. A entrega 3 passou de seis para cinco commits, e o
   total da V1 de 28 para 27.
+- **E3.C6** — apareceu uma falha de acesso nativa: uma geração que conclui no
+  instante em que a janela fecha tocava uma janela de OpenGL já finalizada.
+  Vale para o app, não só para os testes. `Viewport.redesenhar` e os
+  manipuladores de sinal do editor passaram a conferir o encerramento antes de
+  tocar em qualquer coisa.
+- **E3.C6** — um teste que eu havia escrito contradizia a seção 5: eu afirmava
+  que erro de sintaxe num produto o transformava em falha na biblioteca, mas a
+  seção 5 manda manter a versão anterior ativa, que é o que o código faz. O
+  teste foi corrigido para afirmar o comportamento correto.
 - **Infraestrutura** — o remoto `origin` passou de SSH para HTTPS, porque a
   chave privada `~/.ssh/id_ed25519` não é legível pelo processo que executa os
   comandos. Decisão do operador.

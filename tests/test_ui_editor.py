@@ -93,6 +93,17 @@ def test_indicador_comeca_parado(editor) -> None:
     assert not editor.indicador.esta_ativo()
 
 
+def test_geracao_que_conclui_apos_o_encerramento_e_ignorada(editor, qtbot) -> None:
+    """Tocar a viewport com o contexto já solto é falha de acesso nativa."""
+    editor.abrir(REGISTRO.obter("placa_nome"))
+    editor.encerrar()
+
+    # Simula a resposta atrasada do worker chegando depois do fechamento.
+    editor._recebeu_geracao(object())
+    editor._comecou_geracao(1)
+    assert editor.viewport.esta_encerrada()
+
+
 # --- abertura e geração --------------------------------------------------
 
 

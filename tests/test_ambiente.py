@@ -45,6 +45,7 @@ def test_ha_dependencias_fixadas(raiz_do_projeto: Path) -> None:
         "PySide6",
         "trimesh",
         "vtk",
+        "watchdog",
     }
 
 

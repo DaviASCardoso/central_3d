@@ -15,6 +15,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget
 from central import __version__
 from central.log import obter
 from central.nucleo import Registro, descobrir
+from central.nucleo.cache_disco import CacheEmDisco
 from central.ui import tema
 from central.ui.biblioteca import Biblioteca
 from central.ui.editor import Editor
@@ -52,7 +53,7 @@ class JanelaPrincipal(QMainWindow):
         self.biblioteca = Biblioteca(self.registro)
         self.biblioteca.produto_escolhido.connect(self.abrir_no_editor)
 
-        self.editor = Editor()
+        self.editor = Editor(cache_em_disco=CacheEmDisco())
 
         self._abas = QTabWidget(self)
         self._abas.addTab(self.biblioteca, "Biblioteca")

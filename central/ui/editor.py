@@ -5,8 +5,10 @@ visibilidade alternável. Ao centro, a viewport. À direita, o inspetor. Abaixo
 de tudo, uma barra de status com o estado da geração, o resultado da checagem,
 os avisos do produto e as dimensões finais. Ver a seção 11 do CENTRAL.md.
 
-A geração aqui é síncrona, com o travamento momentâneo aceito. O worker com
-cancelamento e debounce é da entrega 3.
+A geração acontece no worker, fora da thread da interface. Enquanto ele
+trabalha, a peça anterior permanece visível com opacidade reduzida e um
+indicador discreto aparece no canto da viewport — nunca um spinner que cobre a
+tela, nunca a viewport ficando vazia.
 
 Nenhuma regra de negócio mora neste módulo: ele chama o núcleo e exibe o que
 volta.
@@ -14,10 +16,10 @@ volta.
 
 from __future__ import annotations
 
-import traceback
 from typing import Any
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtGui import QCloseEvent, QResizeEvent
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -31,14 +33,14 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from central.contrato import Produto
+from central.contrato import Produto, TipoParam
 from central.log import obter
-from central.nucleo.erros import ErroCentral, ErroDeValidacao
-from central.nucleo.geracao import ResultadoGeracao, gerar_sincrono
+from central.nucleo.cache_disco import CacheEmDisco
+from central.nucleo.geracao import ResultadoGeracao
 from central.nucleo.impressora import VOLUME_DE_CONSTRUCAO
-from central.nucleo.tesselagem import NivelTesselagem
-from central.nucleo.validacao import CHAVE_CRUZADA, validar
+from central.nucleo.worker import Falha, GeradorEmThread
 from central.ui import tema
+from central.ui.indicador import IndicadorDeGeracao
 from central.ui.inspetor import Inspetor
 from central.ui.viewport import Viewport
 
@@ -49,6 +51,16 @@ LARGURA_DO_INSPETOR = 340
 
 PAGINA_VIEWPORT = 0
 PAGINA_ERRO = 1
+
+DEBOUNCE_EM_MS = 250
+"""Espera de silêncio antes de agendar uma geração, conforme a seção 6."""
+
+TIPOS_CONTINUOS = frozenset({TipoParam.TEXTO, TipoParam.INTEIRO, TipoParam.DECIMAL})
+"""Tipos cuja edição é arrastada ou digitada e por isso merece debounce.
+
+Os discretos — booleano, escolha e cor — mudam de uma vez só e atualizam na
+hora, porque esperar 250 ms depois de um clique parece travamento.
+"""
 
 
 class ArvoreDeCorpos(QTreeWidget):
@@ -209,16 +221,35 @@ class Editor(QWidget):
     gerado = Signal(object)
     falhou = Signal(str)
 
-    def __init__(self, pai: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        cache_em_disco: CacheEmDisco | None = None,
+        pai: QWidget | None = None,
+    ) -> None:
         """Monta os três painéis, ainda sem produto aberto.
 
         Args:
+            cache_em_disco: Cache de malhas de preview entre execuções, ou
+                `None` para não persistir nada.
             pai: Widget pai.
         """
         super().__init__(pai)
         self.produto: Produto | None = None
         self.inspetor: Inspetor | None = None
         self.ultima_geracao: ResultadoGeracao | None = None
+        self._encerrado = False
+
+        self.gerador = GeradorEmThread(cache_em_disco=cache_em_disco)
+        self.gerador.pronto.connect(self._recebeu_geracao)
+        self.gerador.falhou.connect(self._recebeu_falha)
+        self.gerador.cancelado.connect(self._recebeu_cancelamento)
+        self.gerador.comecou.connect(self._comecou_geracao)
+
+        self._debounce = QTimer(self)
+        self._debounce.setSingleShot(True)
+        self._debounce.setInterval(DEBOUNCE_EM_MS)
+        self._debounce.timeout.connect(self._agendar_agora)
+        self._valores_pendentes: dict[str, Any] | None = None
 
         self.barra_de_ferramentas = QToolBar()
         self.acao_restaurar = self.barra_de_ferramentas.addAction("Restaurar padrões")
@@ -230,6 +261,7 @@ class Editor(QWidget):
         self.arvore.visibilidade_mudou.connect(self._alternar_corpo)
 
         self.viewport = Viewport()
+        self.indicador = IndicadorDeGeracao(self.viewport)
         self.painel_de_erro = PainelDeErro()
         self.pilha = QStackedWidget()
         self.pilha.addWidget(self.viewport)
@@ -269,8 +301,28 @@ class Editor(QWidget):
         self.viewport.iniciar()
 
     def encerrar(self) -> None:
-        """Solta os recursos do VTK."""
+        """Derruba a thread de geração e solta os recursos do VTK.
+
+        Idempotente: chamar duas vezes não faz mal, o que importa porque o
+        encerramento pode vir do `closeEvent` da janela ou de quem criou o
+        editor diretamente.
+        """
+        if self._encerrado:
+            return
+        self._encerrado = True
+        self._debounce.stop()
+        self.gerador.encerrar()
         self.viewport.encerrar()
+
+    def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802 -- nome do Qt
+        """Solta os recursos antes de o widget sumir."""
+        self.encerrar()
+        super().closeEvent(event)
+
+    def resizeEvent(self, event: QResizeEvent) -> None:  # noqa: N802 -- nome do Qt
+        """Mantém o indicador colado no canto da viewport."""
+        super().resizeEvent(event)
+        self.indicador.reposicionar()
 
     # --- abertura de produto ---------------------------------------------
 
@@ -291,7 +343,7 @@ class Editor(QWidget):
         self._vazio.setVisible(False)
 
         self.inspetor = Inspetor(produto)
-        self.inspetor.valores_mudaram.connect(self.gerar)
+        self.inspetor.campo_editado.connect(self._campo_editado)
         self._disposicao_do_inspetor.addWidget(self.inspetor)
 
         self.acao_restaurar.setEnabled(True)
@@ -306,33 +358,76 @@ class Editor(QWidget):
         """Devolve todos os campos ao padrão declarado e regenera."""
         if self.inspetor is not None:
             self.inspetor.restaurar_padroes()
+            self.gerar(self.inspetor.valores())
+
+    # --- agendamento -----------------------------------------------------
+
+    def _campo_editado(self, chave: str, valores: dict[str, Any]) -> None:
+        """Decide entre gerar na hora ou esperar o silêncio do debounce.
+
+        Edição contínua — texto digitado, slider arrastado — é debounceada em
+        250 ms. Booleano, escolha e cor mudam de uma vez só e atualizam
+        imediatamente, porque esperar depois de um clique parece travamento.
+
+        Args:
+            chave: Chave do parâmetro editado.
+            valores: Valores correntes do inspetor.
+        """
+        if self.produto is None:
+            return
+        param = next((p for p in self.produto.params if p.chave == chave), None)
+        if param is not None and param.tipo not in TIPOS_CONTINUOS:
+            self._debounce.stop()
+            self.gerar(valores)
+            return
+
+        self._valores_pendentes = valores
+        self._debounce.start()
+
+    def _agendar_agora(self) -> None:
+        """Dispara a geração adiada pelo debounce."""
+        if self._valores_pendentes is not None:
+            valores, self._valores_pendentes = self._valores_pendentes, None
+            self.gerar(valores)
+
+    def debounce_pendente(self) -> bool:
+        """Diz se há uma geração aguardando o silêncio do debounce."""
+        return self._debounce.isActive()
 
     # --- geração ---------------------------------------------------------
 
     def gerar(self, valores: dict[str, Any]) -> None:
-        """Valida, gera e exibe. Síncrono nesta entrega.
+        """Agenda uma geração no worker, cancelando a anterior.
 
         Args:
             valores: Valores correntes do inspetor.
         """
         if self.produto is None or self.inspetor is None:
             return
+        self.gerador.agendar(self.produto, valores)
 
-        validacao = validar(self.produto, valores)
-        self.inspetor.grifar_erros(validacao.erros)
-        if not validacao.valido:
-            self._mostrar_invalido(validacao.erros)
-            return
-
+    def _comecou_geracao(self, sequencia: int) -> None:
+        """Mostra que há trabalho em curso sem esconder a peça anterior."""
+        del sequencia
         self.status.mostrar_estado("Gerando…")
-        try:
-            resultado = gerar_sincrono(self.produto, valores, NivelTesselagem.PREVIEW)
-        except ErroDeValidacao as erro:
-            self._mostrar_invalido({CHAVE_CRUZADA: [str(erro)]})
-            return
-        except ErroCentral as erro:
-            self._mostrar_falha(erro)
-            return
+        self.indicador.iniciar()
+        if self.ultima_geracao is not None:
+            self.viewport.definir_opacidade_de_geracao(True)
+
+    def _encerrar_indicacao(self) -> None:
+        """Devolve a viewport ao estado normal."""
+        self.indicador.parar()
+        self.viewport.definir_opacidade_de_geracao(False)
+
+    def _recebeu_geracao(self, resultado: ResultadoGeracao) -> None:
+        """Exibe uma geração concluída.
+
+        Args:
+            resultado: O que o worker produziu.
+        """
+        self._encerrar_indicacao()
+        if self.inspetor is not None:
+            self.inspetor.grifar_erros({})
 
         self.ultima_geracao = resultado
         self.pilha.setCurrentIndex(PAGINA_VIEWPORT)
@@ -345,28 +440,37 @@ class Editor(QWidget):
         self.status.mostrar_geracao(resultado)
         self.gerado.emit(resultado)
 
-    def _mostrar_invalido(self, erros: dict[str, list[str]]) -> None:
-        """Mostra erros de validação sem trocar a peça que está na viewport."""
-        mensagens = [f"{chave}: {m}" for chave, ms in erros.items() for m in ms]
-        resumo = f"{len(mensagens)} valor(es) inválido(s)"
-        self.status.mostrar_erro(resumo)
-        _log.debug("validação recusou: %s", mensagens)
-        self.falhou.emit(resumo)
+    def _recebeu_cancelamento(self, sequencia: int) -> None:
+        """Ignora um pedido abortado, sem tocar no que está na tela."""
+        _log.debug("pedido %d cancelado", sequencia)
 
-    def _mostrar_falha(self, erro: Exception) -> None:
-        """Troca a viewport pelo painel de erro, mantendo o inspetor ativo.
+    def _recebeu_falha(self, falha: Falha) -> None:
+        """Exibe uma falha vinda do worker.
 
-        O inspetor continua funcional de propósito: o operador precisa poder
-        corrigir o valor e tentar de novo sem reabrir o produto.
+        Erro de validação grifa o campo culpado e mantém a peça anterior na
+        viewport. Erro de geração troca a viewport pelo painel de traceback,
+        mas o inspetor continua funcional para o operador corrigir e tentar de
+        novo sem reabrir o produto.
+
+        Args:
+            falha: O que o worker emitiu.
         """
-        detalhe = "".join(
-            traceback.format_exception(type(erro), erro, erro.__traceback__)
-        )
-        self.painel_de_erro.mostrar(str(erro), detalhe)
+        self._encerrar_indicacao()
+
+        if falha.erros_por_chave:
+            if self.inspetor is not None:
+                self.inspetor.grifar_erros(falha.erros_por_chave)
+            quantidade = sum(len(m) for m in falha.erros_por_chave.values())
+            resumo = f"{quantidade} valor(es) inválido(s)"
+            self.status.mostrar_erro(resumo)
+            self.falhou.emit(resumo)
+            return
+
+        self.painel_de_erro.mostrar(falha.mensagem, falha.traceback_completo)
         self.pilha.setCurrentIndex(PAGINA_ERRO)
         self.status.mostrar_erro("Falha na geração")
-        _log.warning("geração falhou: %s", erro)
-        self.falhou.emit(str(erro))
+        _log.warning("geração falhou: %s", falha.mensagem)
+        self.falhou.emit(falha.mensagem)
 
     # --- corpos ----------------------------------------------------------
 

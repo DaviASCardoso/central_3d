@@ -22,10 +22,10 @@ vinte minutos.
 | --- | --- | --- |
 | 1 — contrato, descoberta, produto, CLI | 10 | 10 |
 | 2 — janela, biblioteca, viewport, inspetor | 5 | 5 |
-| 3 — assíncrono, cache, hot reload | 5 | 3 |
+| 3 — assíncrono, cache, hot reload | 5 | 4 |
 | 4 — qualidade, exportação, Bambu Studio | 5 | 0 |
 | Fechamento — os três artefatos | 2 | 0 |
-| **Total** | **27** | **18** |
+| **Total** | **27** | **19** |
 
 ## Protocolo de execução
 
@@ -298,7 +298,7 @@ Editor apenas: Lote e Catálogo não existem na V1 e não entram como aba vazia.
   e o worker segue vivo para o pedido seguinte.
 - **Depende de:** E3.C3
 
-### ⬜ E3.C5 — `feat(ui): editor assíncrono com debounce e estado de geração legível`
+### ✅ E3.C5 — `feat(ui): editor assíncrono com debounce e estado de geração legível`
 
 - **Aceite:** arrastar o slider por dois segundos dispara uma geração, 250 ms
   após o último movimento; a interface responde durante a geração; a peça

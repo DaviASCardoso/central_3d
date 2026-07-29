@@ -528,6 +528,7 @@ class Inspetor(QScrollArea):
     """O painel direito do editor, montado a partir de `Produto.params`."""
 
     valores_mudaram = Signal(dict)
+    campo_editado = Signal(str, dict)
 
     def __init__(self, produto: Produto, pai: QWidget | None = None) -> None:
         """Monta um campo por parâmetro, agrupado como o manifesto declara.
@@ -593,12 +594,24 @@ class Inspetor(QScrollArea):
         campo = Campo(param, widget, rotulo)
         self.campos[param.chave] = campo
 
-        _sinal_de_mudanca(widget).connect(lambda *_: self._mudou())
+        _sinal_de_mudanca(widget).connect(
+            lambda *_, chave=param.chave: self._mudou(chave)
+        )
 
-    def _mudou(self) -> None:
-        """Reage a qualquer edição: reavalia visibilidade e emite os valores."""
+    def _mudou(self, chave: str) -> None:
+        """Reage a uma edição: reavalia visibilidade e emite os valores.
+
+        `campo_editado` sai junto de `valores_mudaram` e diz qual campo mexeu,
+        para que o editor decida entre atualizar na hora ou aguardar o
+        debounce. Quem só quer os valores continua ouvindo `valores_mudaram`.
+
+        Args:
+            chave: A chave do parâmetro que o operador acabou de editar.
+        """
         self._reavaliar_visibilidade()
-        self.valores_mudaram.emit(self.valores())
+        valores = self.valores()
+        self.campo_editado.emit(chave, valores)
+        self.valores_mudaram.emit(valores)
 
     def _reavaliar_visibilidade(self, animar: bool = True) -> None:
         """Aplica `visivel_se` de todos os campos com os valores correntes."""

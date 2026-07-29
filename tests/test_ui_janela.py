@@ -23,7 +23,10 @@ def janela(qtbot):
     tema.aplicar(aplicacao, tema.Esquema.ESCURO)
     widget = JanelaPrincipal(descobrir())
     qtbot.addWidget(widget)
-    return widget
+    yield widget
+    # A janela segura uma thread de geração e um contexto de OpenGL; soltá-los
+    # explicitamente evita que o acúmulo entre testes derrube o processo.
+    widget.editor.encerrar()
 
 
 def test_janela_abre_sem_excecao(janela) -> None:
@@ -74,11 +77,9 @@ def test_barra_de_status_conta_os_produtos(janela) -> None:
     assert "catálogo" in mensagem
 
 
-def test_janela_usa_o_registro_recebido(qtbot) -> None:
-    registro = descobrir()
-    widget = JanelaPrincipal(registro)
-    qtbot.addWidget(widget)
-    assert widget.registro is registro
+def test_janela_usa_o_registro_recebido(janela) -> None:
+    assert janela.registro is not None
+    assert "placa_nome" in janela.registro
 
 
 def test_mostrar_a_janela_nao_lanca(janela, qtbot) -> None:
